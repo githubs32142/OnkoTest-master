@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_praca" default="compile.module.praca">
+  <dirname property="module.praca.basedir" file="${ant.file.module_praca}"/>
+  
+  <property name="module.jdk.home.praca" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.praca" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.praca" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.praca" value="-encoding UTF-8 -source 1.8 -target 1.8 ${compiler.args}"/>
+  
+  <property name="praca.output.dir" value="${module.praca.basedir}/out/production/Praca"/>
+  <property name="praca.testoutput.dir" value="${module.praca.basedir}/out/test/Praca"/>
+  
+  <path id="praca.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="praca.module.production.classpath">
+    <path refid="${module.jdk.classpath.praca}"/>
+    <fileset dir="${basedir}/src/projekt/Lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="praca.runtime.production.module.classpath">
+    <pathelement location="${praca.output.dir}"/>
+    <fileset dir="${basedir}/src/projekt/Lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="praca.module.classpath">
+    <path refid="${module.jdk.classpath.praca}"/>
+    <pathelement location="${praca.output.dir}"/>
+    <fileset dir="${basedir}/src/projekt/Lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="praca.runtime.module.classpath">
+    <pathelement location="${praca.testoutput.dir}"/>
+    <pathelement location="${praca.output.dir}"/>
+    <fileset dir="${basedir}/src/projekt/Lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.praca">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.praca">
+    <patternset refid="excluded.from.module.praca"/>
+  </patternset>
+  
+  <path id="praca.module.sourcepath">
+    <dirset dir="${module.praca.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.praca" depends="compile.module.praca.production,compile.module.praca.tests" description="Compile module Praca"/>
+  
+  <target name="compile.module.praca.production" depends="register.custom.compilers" description="Compile module Praca; production classes">
+    <mkdir dir="${praca.output.dir}"/>
+    <javac2 destdir="${praca.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.praca}/javac">
+      <compilerarg line="${compiler.args.praca}"/>
+      <bootclasspath refid="praca.module.bootclasspath"/>
+      <classpath refid="praca.module.production.classpath"/>
+      <src refid="praca.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.praca"/>
+    </javac2>
+    
+    <copy todir="${praca.output.dir}">
+      <fileset dir="${module.praca.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.praca.tests" depends="register.custom.compilers,compile.module.praca.production" description="compile module Praca; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.praca" description="cleanup module">
+    <delete dir="${praca.output.dir}"/>
+    <delete dir="${praca.testoutput.dir}"/>
+  </target>
+</project>
